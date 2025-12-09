@@ -8,13 +8,13 @@
                 <v-card width="550">
                     <v-card-title>Login</v-card-title>
                     <v-card-text class="py-0">
-                        <v-form>
-                            <v-text-field variant="outlined" label="Email" v-model="email" />
-                            <v-text-field variant="outlined" label="Password" v-model="password" />
+                        <v-form ref="login_form">
+                            <v-text-field maxlength="10" :rules="[$rules.required, $rules.phone]" variant="outlined" label="Mobile Number" v-model="mobileNumber" />
                         </v-form>
                     </v-card-text>
                     <v-card-actions class="pa-4 pt-0">
-                        <v-btn class="w-100 text-capitalize" color="primary" variant="outlined">Login</v-btn>
+                        <v-spacer></v-spacer>
+                        <v-btn @click="getOTP" class="text-capitalize" color="primary" variant="outlined">Get OTP</v-btn>
                     </v-card-actions>
                 </v-card>
             </v-col>
@@ -25,8 +25,14 @@
         export default {
             data() {
                 return {
-                    email: '',
+                    mobileNumber: '',
                     password: '',
+                }
+            },
+            methods: {
+                getOTP() {
+                    if (this.$refs.login_form.validate() == false) return false;
+                    console.log(this.mobileNumber);
                 }
             }
         }
