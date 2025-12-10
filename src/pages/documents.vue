@@ -21,9 +21,37 @@
                     :items="documentList"
                     :items-per-page="10"
                     hide-default-footer
+                    :loading="table_loading"
+                    no-data-text="No documents found"
                     :header-props="{class: 'bg-indigo text-white'}"
-                    
-                ></v-data-table>
+                >
+                    <template v-slot:item.actions="{ item }">
+                        <div class="d-flex ga-2">
+                            <v-btn
+                                v-if="item.file_url"
+                                icon
+                                variant="text"
+                                size="small"
+                                color="primary"
+                                @click="viewFile(item.file_url)"
+                                title="View File"
+                            >
+                                <v-icon>mdi-eye</v-icon>
+                            </v-btn>
+                            <v-btn
+                                v-if="item.file_url"
+                                icon
+                                variant="text"
+                                size="small"
+                                color="success"
+                                @click="downloadFile(item.file_url)"
+                                title="Download File"
+                            >
+                                <v-icon>mdi-download</v-icon>
+                            </v-btn>
+                        </div>
+                    </template>
+                </v-data-table>
             </v-col>
         </v-row>
         <UploadDocument ref="uploadDocument" />
@@ -40,6 +68,7 @@ export default {
     data() {
         return {
             isUploading: false,
+            table_loading: false,
             headers: [
                 { 
                     title: 'Document ID', 
@@ -100,7 +129,16 @@ export default {
         addDocument() {
             this.$refs.uploadDocument.openDialog();
         },
+        viewFile(fileUrl) {
+            if (fileUrl) {
+                window.open(fileUrl, '_blank');
+            }
+        },
+        downloadFile(fileUrl) {
+            console.log(fileUrl);
+        },
         getDocumentList() {
+            this.table_loading = true;
             const formData = {
                 uploaded_by: sessionStorage.getItem("user_id"),
                 major_head: "",
@@ -117,9 +155,11 @@ export default {
 
             }
             const successHandler = (response) => {
+                
                 this.documentList = response.data;
             }
             const failureHandler = (error) => {
+                this.table_loading = false;
                 console.error('Failed to get document list:', error);
             }
             this.$api.request_POST(
