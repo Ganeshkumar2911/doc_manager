@@ -23,9 +23,7 @@ const app = createApp(App)
 app.config.globalProperties.$api = {
   request_POST: (url, data = {}, onSuccess = null, onError = null) => {
     const headers = {
-      token: sessionStorage.getItem("token"),
-      "application-type": "web",
-      "Content-Type": "application/json",
+      token: sessionStorage.getItem("token")
     };
 
     axios_instance
@@ -36,7 +34,7 @@ app.config.globalProperties.$api = {
         }
         
         if (onSuccess) {
-          onSuccess(response);
+          onSuccess(response.data);
         }
       })
       .catch((error) => {
