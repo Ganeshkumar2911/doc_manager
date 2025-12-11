@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex justify-center align-center" style="height: 100vh;"> 
-        <v-row class="h-75 mx-2 mx-md-16 rounded-xl elevation-2" style="background-color: #f5f5f5;">
+        <v-row class="h-75 mx-2 mx-md-16 rounded-xl elevation-2" style="background-color: #f5e3fc;">
             <v-col cols="12" md="6" class="d-none d-md-flex justify-center align-center">
                 <v-img src="@/assets/loginImg.svg" height="75%" width="80%"></v-img>
             </v-col>
