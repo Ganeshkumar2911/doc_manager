@@ -151,6 +151,10 @@
                         sessionStorage.setItem("token", response.data.token);
                         sessionStorage.setItem("user_id", response.data.user_id);
                         sessionStorage.setItem("user_name", response.data.user_name);
+                        this.showOTP = false;
+                        this.disableMobileNumber = false;
+                        this.mobileNumber = '';
+                        this.otp = '';
                         this.$router.push({ name: "documents" });
                     }
                     const failureHandler = (error) => {
@@ -162,10 +166,6 @@
                         successHandler,
                         failureHandler
                     );
-                    this.showOTP = false;
-                    this.disableMobileNumber = false;
-                    this.mobileNumber = '';
-                    this.otp = '';
                 }
             }
         }

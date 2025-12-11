@@ -163,7 +163,7 @@ export default {
             isUploading: false,
             table_loading: false,
             date_filter_menu: false,
-            date_filter_menu: false,
+
             display_daterange: "",
             date_range: [],
             today: new Date().toISOString().substr(0, 10),
