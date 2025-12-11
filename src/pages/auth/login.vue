@@ -16,7 +16,6 @@
                     </div>
                     <v-card-text class="px-6 pb-4">
                     <v-form ref="login_form">
-                        <!-- Mobile Number Field -->
                         <div class="mb-4">
                         <label class="text-subtitle-2 font-weight-medium mb-2 d-block">
                             Mobile Number
@@ -33,8 +32,6 @@
                         >
                         </v-text-field>
                         </div>
-
-                        <!-- OTP Input -->
                         <v-expand-transition>
                         <div v-if="showOTP" class="otp-section">
                             <label class="text-subtitle-2 font-weight-medium mb-2 d-block">
@@ -47,8 +44,6 @@
                             type="number"
                             class="mb-3"
                             ></v-otp-input>
-                            
-                            <!-- Resend OTP -->
                             <div class="text-center">
                             <span class="text-caption text-medium-emphasis">
                                 Didn't receive the code?
@@ -58,9 +53,10 @@
                                 size="small"
                                 color="primary"
                                 class="text-caption ml-1"
+                                :disabled="resendTimer > 0"
                                 @click="resendOTP"
                             >
-                                Resend OTP
+                                {{ resendTimer > 0 ? `Resend OTP (${resendTimer}s)` : 'Resend OTP' }}
                             </v-btn>
                             </div>
                         </div>
@@ -118,21 +114,28 @@
                     password: '',
                     disableMobileNumber: false,
                     showOTP: false,
+                    resendTimer: 0,
+                    resendTimerInterval: null,
+                }
+            },
+            beforeUnmount() {
+                if (this.resendTimerInterval) {
+                    clearInterval(this.resendTimerInterval);
                 }
             },
             methods: {
                 getOTP() {
                     if (this.$refs.login_form.validate() == false) return false;
+                    this.showOTP = true;
+                    this.disableMobileNumber = true;
+                    this.startResendTimer();
                     let formData = {
                         mobile_number: this.mobileNumber,
                     }
-
-                    const successHandler = () => {
-                        this.showOTP = true;
-                        this.disableMobileNumber = true;
-                    }
-                    const failureHandler = (error) => {
-                        console.log(error);
+                    const successHandler = () => {}
+                    const failureHandler = () => {
+                        this.showOTP = false;
+                        this.disableMobileNumber = false;
                     }
                     this.$api.request_POST(
                         this.$urls.GET_OTP,
@@ -141,6 +144,23 @@
                         failureHandler
                     );
                 },
+                resendOTP() {
+                    if (this.resendTimer > 0) return;
+                    this.getOTP();
+                },
+                startResendTimer() {
+                    this.resendTimer = 30;
+                    if (this.resendTimerInterval) {
+                        clearInterval(this.resendTimerInterval);
+                    }
+                    this.resendTimerInterval = setInterval(() => {
+                        this.resendTimer--;
+                        if (this.resendTimer <= 0) {
+                            clearInterval(this.resendTimerInterval);
+                            this.resendTimerInterval = null;
+                        }
+                    }, 1000);
+                },
                 verifyOTP() {
                     if (this.$refs.login_form.validate() == false) return false;
                     let formData = {
@@ -148,6 +168,10 @@
                         otp: this.otp,
                     }
                     const successHandler = (response) => {
+                        if (this.resendTimerInterval) {
+                            clearInterval(this.resendTimerInterval);
+                            this.resendTimerInterval = null;
+                        }
                         sessionStorage.setItem("token", response.data.token);
                         sessionStorage.setItem("user_id", response.data.user_id);
                         sessionStorage.setItem("user_name", response.data.user_name);
@@ -155,6 +179,7 @@
                         this.disableMobileNumber = false;
                         this.mobileNumber = '';
                         this.otp = '';
+                        this.resendTimer = 0;
                         this.$router.push({ name: "documents" });
                     }
                     const failureHandler = (error) => {
