@@ -125,8 +125,8 @@
                 }
             },
             methods: {
-                getOTP() {
-                    const { valid } = this.$refs.login_form.validate();
+                async getOTP() {
+                    const { valid } = await this.$refs.login_form.validate();
                     if (!valid) return false;
                     
                     this.showOTP = true;
@@ -164,8 +164,8 @@
                         }
                     }, 1000);
                 },
-                verifyOTP() {
-                    const { valid } = this.$refs.login_form.validate();
+                async verifyOTP() {
+                    const { valid } = await this.$refs.login_form.validate();
                     if (!valid) return false;
                     
                     let formData = {
