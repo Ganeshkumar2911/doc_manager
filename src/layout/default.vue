@@ -23,7 +23,7 @@
             min-width="120"
             variants="outlined"
             class="border"
-            
+            @click="openLogoutDialog"
           >
             Logout
           </v-btn>
@@ -61,11 +61,17 @@
           <router-view class="routerView"></router-view>
         </div>
       </div>
+      <LogoutDialog ref="logoutDialog" />
     </div>
   </template>
   
   <script>
+  import LogoutDialog from '@/components/common/LogoutDialog.vue'
+  
   export default {
+    components: {
+      LogoutDialog
+    },
     data() {
       return {
         display_search_text: ''
@@ -79,6 +85,9 @@
         this.display_search_text = "";
         this.$store.dispatch("setSearchText", "");
       },
+      openLogoutDialog() {
+        this.$refs.logoutDialog.openDialog();
+      }
     }
   };
   </script>
@@ -100,6 +109,7 @@
     height: 10vh;
     display: flex;
     align-items: center;
+    background-color: #b3f5cd;
     justify-content: space-between;
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
     z-index: 2;
