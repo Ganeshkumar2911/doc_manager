@@ -125,7 +125,7 @@
                                 variant="text"
                                 size="small"
                                 color="primary"
-                                @click="viewFile(item.file_url)"
+                                @click="downloadDocument(item.file_url)"
                                 title="View File"
                             >
                                 <v-icon>mdi-eye</v-icon>
@@ -134,7 +134,7 @@
                                 v-if="item.file_url"
                                 icon
                                 variant="text"
-                                @click="downloadFile(item.file_url, item.file_name)"
+                                @click="downloadDocument(item.file_url)"
                                 size="small"
                                 color="success"
                                 title="Download File"
@@ -260,24 +260,6 @@ export default {
         }
     },
     methods: {
-        async downloadFile(url, filename) {
-      try {
-        const response = await fetch(url);
-        const blob = await response.blob();
-        const blobUrl = window.URL.createObjectURL(blob);
-        
-        const link = document.createElement('a');
-        link.href = blobUrl;
-        link.download = filename || 'document';
-        document.body.appendChild(link);
-        link.click();
-        
-        document.body.removeChild(link);
-        window.URL.revokeObjectURL(blobUrl);
-      } catch (error) {
-        console.error('Download failed:', error);
-      }
-    },
         addDocument() {
             this.$refs.uploadDocument.openDialog();
         },
@@ -327,13 +309,10 @@ export default {
             this.date_range = [];
             this.getDocumentList();
         },
-        viewFile(fileUrl) {
+        downloadDocument(fileUrl) {
             if (fileUrl) {
                 window.open(fileUrl, '_blank');
             }
-        },
-        downloadFile(fileUrl) {
-            console.log(fileUrl);
         },
         onFilterChange() {
             if (!this.filters.major_head) {
