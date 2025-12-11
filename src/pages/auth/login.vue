@@ -15,7 +15,7 @@
                     </v-card-subtitle>
                     </div>
                     <v-card-text class="px-6 pb-4">
-                    <v-form ref="login_form">
+                    <v-form ref="login_form" @submit.prevent>
                         <div class="mb-4">
                         <label class="text-subtitle-2 font-weight-medium mb-2 d-block">
                             Mobile Number
@@ -29,6 +29,7 @@
                             :disabled="disableMobileNumber"
                             density="comfortable"
                             prepend-inner-icon="mdi-phone"
+                            type="tel"
                         >
                         </v-text-field>
                         </div>
@@ -125,7 +126,9 @@
             },
             methods: {
                 getOTP() {
-                    if (this.$refs.login_form.validate() == false) return false;
+                    const { valid } = this.$refs.login_form.validate();
+                    if (!valid) return false;
+                    
                     this.showOTP = true;
                     this.disableMobileNumber = true;
                     this.startResendTimer();
@@ -162,7 +165,9 @@
                     }, 1000);
                 },
                 verifyOTP() {
-                    if (this.$refs.login_form.validate() == false) return false;
+                    const { valid } = this.$refs.login_form.validate();
+                    if (!valid) return false;
+                    
                     let formData = {
                         mobile_number: this.mobileNumber,
                         otp: this.otp,
