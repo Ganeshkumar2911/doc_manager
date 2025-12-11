@@ -1,6 +1,6 @@
 <template>
     <div class="d-flex justify-center align-center" style="height: 100vh;"> 
-        <v-row class="h-75 mx-2 mx-md-16 rounded-xl elevation-2" style="background-color: #f5f5f5;">
+        <v-row class="h-75 mx-2 mx-md-16 rounded-xl elevation-2" style="background-color: #f5e3fc;">
             <v-col cols="12" md="6" class="d-none d-md-flex justify-center align-center">
                 <v-img src="@/assets/loginImg.svg" height="75%" width="80%"></v-img>
             </v-col>
@@ -15,7 +15,7 @@
                     </v-card-subtitle>
                     </div>
                     <v-card-text class="px-6 pb-4">
-                    <v-form ref="login_form">
+                    <v-form ref="login_form" @submit.prevent>
                         <div class="mb-4">
                         <label class="text-subtitle-2 font-weight-medium mb-2 d-block">
                             Mobile Number
@@ -29,6 +29,7 @@
                             :disabled="disableMobileNumber"
                             density="comfortable"
                             prepend-inner-icon="mdi-phone"
+                            type="tel"
                         >
                         </v-text-field>
                         </div>
@@ -124,8 +125,10 @@
                 }
             },
             methods: {
-                getOTP() {
-                    if (this.$refs.login_form.validate() == false) return false;
+                async getOTP() {
+                    const { valid } = await this.$refs.login_form.validate();
+                    if (!valid) return false;
+                    
                     this.showOTP = true;
                     this.disableMobileNumber = true;
                     this.startResendTimer();
@@ -161,8 +164,10 @@
                         }
                     }, 1000);
                 },
-                verifyOTP() {
-                    if (this.$refs.login_form.validate() == false) return false;
+                async verifyOTP() {
+                    const { valid } = await this.$refs.login_form.validate();
+                    if (!valid) return false;
+                    
                     let formData = {
                         mobile_number: this.mobileNumber,
                         otp: this.otp,
