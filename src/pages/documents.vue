@@ -134,9 +134,9 @@
                                 v-if="item.file_url"
                                 icon
                                 variant="text"
+                                @click="downloadFile(item.file_url, item.file_name)"
                                 size="small"
                                 color="success"
-                                @click="downloadFile(item.file_url)"
                                 title="Download File"
                             >
                                 <v-icon>mdi-download</v-icon>
@@ -151,6 +151,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 import UploadDocument from "@/components/documents/uploadDoc.vue"
 export default {
     name: "DocumentsPage",
@@ -232,7 +233,15 @@ export default {
         this.getDocumentTags();
         this.getDocumentList();
     },
+    watch: {
+        search_query(new_search_query, old_search_query) {
+        this.getDocumentList();
+        },
+    },
     computed: {
+        ...mapGetters({
+            search_query: "getSearchText",
+        }),
         minorHeadOptions() {
             if (this.filters.major_head === 'Personal') {
                 return this.personalNames;
@@ -251,6 +260,24 @@ export default {
         }
     },
     methods: {
+        async downloadFile(url, filename) {
+      try {
+        const response = await fetch(url);
+        const blob = await response.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        
+        const link = document.createElement('a');
+        link.href = blobUrl;
+        link.download = filename || 'document';
+        document.body.appendChild(link);
+        link.click();
+        
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(blobUrl);
+      } catch (error) {
+        console.error('Download failed:', error);
+      }
+    },
         addDocument() {
             this.$refs.uploadDocument.openDialog();
         },
@@ -346,7 +373,7 @@ export default {
                 length: 10,
                 filterId: "",
                 search: {
-                    value: "",
+                    value: this.search_query,
                 }
 
             }
