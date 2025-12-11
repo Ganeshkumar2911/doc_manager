@@ -138,6 +138,12 @@
 
 <script>
 export default {
+    props: {
+        tags: {
+            type: Array,
+            default: () => []
+        }
+    },
     data() {
         return {
             dialog: false,
@@ -157,11 +163,7 @@ export default {
             categories: ['Personal', 'Professional'],
             personalNames: ['Ganesh', 'Rahul', 'Aditi', 'Rajni', 'Michael'],
             departments: ['Accounts', 'HR', 'IT', 'Finance', 'Marketing'],
-            tags: [],
         }
-    },
-    mounted() {
-        this.getDocumentTags();
     },
     computed: {
         minorHeadOptions() {
@@ -211,24 +213,6 @@ export default {
             }
             this.date_menu = false;
         },
-        getDocumentTags() {
-            const formData = {
-                term: ""
-            }
-            const successHandler = (response) => {
-                this.tags = response.data;
-            }
-            const failureHandler = (error) => {
-                console.error('Failed to get document tags:', error);
-            }
-            this.$api.request_POST(
-                this.$urls.GET_TAGS,
-                formData,
-                successHandler,
-                failureHandler
-            );
-        },
-
         uploadDocument() {
             if (this.$refs.uploadForm.validate() == false) return false;
             this.isUploading = true;
