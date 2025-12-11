@@ -30,7 +30,6 @@
                             :disabled="disableMobileNumber"
                             density="comfortable"
                             prepend-inner-icon="mdi-phone"
-                            hide-details="auto"
                         >
                         </v-text-field>
                         </div>

@@ -109,7 +109,7 @@
     height: 10vh;
     display: flex;
     align-items: center;
-    background-color: #b3f5cd;
+    background-color: #f5f5f7;
     justify-content: space-between;
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
     z-index: 2;
