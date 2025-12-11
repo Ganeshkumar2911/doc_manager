@@ -1,11 +1,11 @@
 <template>
     <div class="d-flex justify-center align-center" style="height: 100vh;"> 
-        <v-row class="h-75 mx-16 rounded-xl elevation-2" style="background-color: #f5f5f5;">
-            <v-col cols="6" class="d-flex justify-center align-center">
+        <v-row class="h-75 mx-2 mx-md-16 rounded-xl elevation-2" style="background-color: #f5f5f5;">
+            <v-col cols="12" md="6" class="d-none d-md-flex justify-center align-center">
                 <v-img src="@/assets/loginImg.svg" height="75%" width="80%"></v-img>
             </v-col>
-            <v-col col="6" class="d-flex justify-center align-center">
-                <v-card width="440" elevation="4" class="rounded-xl">
+            <v-col cols="12" md="6" class="d-flex justify-center align-center">
+                <v-card width="100%" max-width="440" elevation="4" class="rounded-xl">
                     <div class="login-header pa-6 pb-4">
                     <v-card-title class="text-h5 text-center font-weight-bold px-0">
                         Welcome Back
