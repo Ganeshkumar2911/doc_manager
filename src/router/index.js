@@ -14,12 +14,28 @@ const router = createRouter({
   routes,
 })
 
+function isAuthenticated() {
+  const token = sessionStorage.getItem("token");
+  return !!token;
+}
+
 router.beforeEach((to, from, next) => {
-  const isAuthenticated = true; 
-  if( !isAuthenticated && to.name !== 'Login') {
-    next({name:'Login'})
-  } else {
-    next()
+  if (to.path === '/') {
+    next({ name: 'documents' });
+    return;
+  }
+
+  const requiresAuth = to.meta.requiresAuth === true;
+  const authenticated = isAuthenticated();
+
+  if (requiresAuth && !authenticated) {
+    next({ name: 'Login' });
+  }
+  else if (authenticated && to.name === 'Login') {
+    next({ name: 'documents' });
+  }
+  else {
+    next();
   }
 })
 
