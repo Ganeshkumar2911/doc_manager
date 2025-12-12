@@ -251,6 +251,7 @@ export default {
                 console.log('Upload success:', response);
                 this.resetForm();
                 this.dialog = false;
+                this.resetForm();
                 this.$emit('reload');
                 this.$store.dispatch('snackbar/showSnackbar', {
                     message: 'Document uploaded successfully!',
