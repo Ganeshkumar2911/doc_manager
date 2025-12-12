@@ -146,7 +146,7 @@
                 </v-data-table>
             </v-col>
         </v-row>
-        <UploadDocument ref="uploadDocument" :tags="tags" />
+        <UploadDocument ref="uploadDocument" :tags="tags" @reload="getDocumentList" />
     </div>
 </template>
 
