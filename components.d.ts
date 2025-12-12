@@ -16,6 +16,7 @@ declare module 'vue' {
     LogoutDialog: typeof import('./src/components/common/LogoutDialog.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Snackbar: typeof import('./src/components/common/Snackbar.vue')['default']
     UploadDoc: typeof import('./src/components/documents/uploadDoc.vue')['default']
     ViewDoc: typeof import('./src/components/documents/viewDoc.vue')['default']
   }

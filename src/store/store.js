@@ -1,7 +1,9 @@
 import { createStore } from 'vuex';
+import snackbar from './modules/snackbar';
 
 export const store = createStore({
     modules: {
+        snackbar,
     },
     state: {   
         search_text: "",

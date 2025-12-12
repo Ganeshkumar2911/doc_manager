@@ -135,7 +135,22 @@
                     let formData = {
                         mobile_number: this.mobileNumber,
                     }
-                    const successHandler = () => {}
+                    const successHandler = (response) => {
+                        if (response.status === false) { 
+                            this.showOTP = false;
+                            this.disableMobileNumber = false;
+                            this.$store.dispatch('snackbar/showSnackbar', {
+                            message: response.data,
+                            color: 'error',
+                        });
+                        }
+                        else {
+                            this.$store.dispatch('snackbar/showSnackbar', {
+                            message: response.data,
+                            color: 'success',
+                        });
+                        }
+                    }
                     const failureHandler = () => {
                         this.showOTP = false;
                         this.disableMobileNumber = false;
@@ -173,22 +188,39 @@
                         otp: this.otp,
                     }
                     const successHandler = (response) => {
-                        if (this.resendTimerInterval) {
-                            clearInterval(this.resendTimerInterval);
-                            this.resendTimerInterval = null;
+                        if (response.status === false) {
+                            this.$store.dispatch('snackbar/showSnackbar', {
+                                message: response.data || 'OTP verification failed. Please try again.',
+                                color: 'error',
+                            });
+                        } else {
+                            if (this.resendTimerInterval) {
+                                clearInterval(this.resendTimerInterval);
+                                this.resendTimerInterval = null;
+                            }
+                            this.$store.dispatch('snackbar/showSnackbar', {
+                                message: 'OTP verified successfully!',
+                                color: 'success',
+                            });
+                            sessionStorage.setItem("token", response.data.token);
+                            sessionStorage.setItem("user_id", response.data.user_id);
+                            sessionStorage.setItem("user_name", response.data.user_name);
+                            this.showOTP = false;
+                            this.disableMobileNumber = false;
+                            this.mobileNumber = '';
+                            this.otp = '';
+                            this.resendTimer = 0;
+                            setTimeout(() => {
+                                this.$router.push({ name: "documents" });
+                            }, 1000);
                         }
-                        sessionStorage.setItem("token", response.data.token);
-                        sessionStorage.setItem("user_id", response.data.user_id);
-                        sessionStorage.setItem("user_name", response.data.user_name);
-                        this.showOTP = false;
-                        this.disableMobileNumber = false;
-                        this.mobileNumber = '';
-                        this.otp = '';
-                        this.resendTimer = 0;
-                        this.$router.push({ name: "documents" });
                     }
                     const failureHandler = (error) => {
                         console.log(error);
+                        this.$store.dispatch('snackbar/showSnackbar', {
+                            message: 'Failed to verify OTP. Please try again.',
+                            color: 'error',
+                        });
                     }
                     this.$api.request_POST(
                         this.$urls.VERIFY_OTP,
