@@ -6,7 +6,7 @@
                     Upload Document
                 </v-card-title>
                 <v-card-text class="pt-4">
-                    <v-form ref="uploadForm">
+                    <v-form ref="uploadForm" v-model="formValid">
                         <v-row>
                             <v-col cols="12" md="6">
                                 <v-menu
@@ -72,6 +72,7 @@
                                     label="Tags"
                                     variant="outlined"
                                     multiple
+                                    :rules="[$rules.required]" 
                                     chips
                                     closable-chips
                                     hint="Press Enter to add new tag"
@@ -84,6 +85,7 @@
                                     label="Remarks"
                                     variant="outlined"
                                     rows="3"
+                                    :rules="[$rules.required]"
                                 ></v-textarea>
                             </v-col>
                             <v-col cols="12">
@@ -127,6 +129,7 @@
                         variant="elevated"
                         @click="uploadDocument"
                         :loading="isUploading"
+                        :disabled="!isFormValid"
                     >
                         Upload
                     </v-btn>
@@ -151,6 +154,7 @@ export default {
             date_menu: false,
             pickerDate: null,
             today: new Date().toISOString().substr(0, 10),
+            formValid: false,
             
             formData: {
                 date: '',
@@ -187,6 +191,17 @@ export default {
             
             const [year, month, day] = this.formData.date.split('-');
             return `${day}-${month}-${year}`;
+        },
+        isFormValid() {
+            return this.formValid && !!(
+                this.formData.date &&
+                this.formData.major_head &&
+                this.formData.minor_head &&
+                this.formData.tags &&
+                this.formData.tags.length > 0 &&
+                this.formData.remarks &&
+                this.formData.file
+            );
         }
     },
     methods: {
@@ -234,8 +249,9 @@ export default {
 
             const successHandler = (response) => {
                 console.log('Upload success:', response);
-                this.dialog = false;
                 this.resetForm();
+                this.dialog = false;
+                this.$emit('reload');
                 this.$emit('reload');
             }
             const failureHandler = (error) => {
@@ -259,7 +275,8 @@ export default {
                 remarks: '',
                 file: null
             };
-            this.$refs.uploadForm.reset();
+            this.formValid = false;
+            this.$refs.uploadForm?.reset();
             this.isUploading = false;
         }
     }
