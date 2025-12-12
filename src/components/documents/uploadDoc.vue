@@ -252,6 +252,7 @@ export default {
                 this.resetForm();
                 this.dialog = false;
                 this.$emit('reload');
+                this.$emit('reload');
             }
             const failureHandler = (error) => {
                 console.error('Upload failed:', error);
