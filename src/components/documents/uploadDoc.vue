@@ -251,13 +251,20 @@ export default {
                 console.log('Upload success:', response);
                 this.resetForm();
                 this.dialog = false;
+                this.resetForm();
                 this.$emit('reload');
-                this.$emit('reload');
+                this.$store.dispatch('snackbar/showSnackbar', {
+                    message: 'Document uploaded successfully!',
+                    color: 'success',
+                });
             }
             const failureHandler = (error) => {
                 console.error('Upload failed:', error);
-                alert('Failed to upload document');
                 this.isUploading = false;
+                this.$store.dispatch('snackbar/showSnackbar', {
+                    message: 'Failed to upload document. Please try again.',
+                    color: 'error',
+                });
             }
             this.$api.request_POST(
                 this.$urls.UPLOAD_DOCUMENT,
