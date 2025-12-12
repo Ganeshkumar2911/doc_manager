@@ -6,101 +6,191 @@
             </v-col>
             <v-col cols="12" md="6" class="d-flex justify-center align-center">
                 <v-card width="100%" max-width="440" elevation="4" class="rounded-xl">
-                    <div class="login-header pa-6 pb-4">
-                    <v-card-title class="text-h5 text-center font-weight-bold px-0">
-                        Welcome Back
-                    </v-card-title>
-                    <v-card-subtitle class="text-center text-medium-emphasis px-0 mt-1">
-                        {{ showOTP ? 'Enter the OTP sent to your mobile' : 'Sign in to continue to your account' }}
-                    </v-card-subtitle>
-                    </div>
-                    <v-card-text class="px-6 pb-4">
-                    <v-form ref="login_form" @submit.prevent>
-                        <div class="mb-4">
-                        <label class="text-subtitle-2 font-weight-medium mb-2 d-block">
-                            Mobile Number
-                        </label>
-                        <v-text-field
-                            v-model="mobileNumber"
-                            maxlength="10"
-                            :rules="[$rules.required, $rules.phone]"
-                            variant="outlined"
-                            placeholder="Enter your 10-digit mobile number"
-                            :disabled="disableMobileNumber"
-                            density="comfortable"
-                            prepend-inner-icon="mdi-phone"
-                            type="tel"
-                        >
-                        </v-text-field>
+                    <!-- Login View -->
+                    <template v-if="!isRegisterMode">
+                        <div class="pa-6 pb-4">
+                            <v-card-title class="text-h5 text-center font-weight-bold px-0">
+                                Welcome Back
+                            </v-card-title>
+                            <v-card-subtitle class="text-center text-medium-emphasis px-0 mt-1">
+                                {{ showOTP ? 'Enter the OTP sent to your mobile' : 'Sign in to continue to your account' }}
+                            </v-card-subtitle>
                         </div>
-                        <v-expand-transition>
-                        <div v-if="showOTP" class="otp-section">
-                            <label class="text-subtitle-2 font-weight-medium mb-2 d-block">
-                            One-Time Password
-                            </label>
-                            <v-otp-input
-                            v-model="otp"
-                            :length="6"
-                            variant="outlined"
-                            type="number"
-                            class="mb-3"
-                            ></v-otp-input>
-                            <div class="text-center">
-                            <span class="text-caption text-medium-emphasis">
-                                Didn't receive the code?
-                            </span>
+                        <v-card-text class="px-6 pb-4">
+                            <v-form ref="login_form" @submit.prevent>
+                                <div class="mb-4">
+                                    <label class="text-subtitle-2 font-weight-medium mb-2 d-block">
+                                        Mobile Number
+                                    </label>
+                                    <v-text-field
+                                        v-model="mobileNumber"
+                                        maxlength="10"
+                                        :rules="[$rules.required, $rules.phone]"
+                                        variant="outlined"
+                                        placeholder="Enter your 10-digit mobile number"
+                                        :disabled="disableMobileNumber"
+                                        density="comfortable"
+                                        prepend-inner-icon="mdi-phone"
+                                        type="tel"
+                                    >
+                                    </v-text-field>
+                                </div>
+                                <v-expand-transition>
+                                    <div v-if="showOTP" class="otp-section">
+                                        <label class="text-subtitle-2 font-weight-medium mb-2 d-block">
+                                            One-Time Password
+                                        </label>
+                                        <v-otp-input
+                                            v-model="otp"
+                                            :length="6"
+                                            variant="outlined"
+                                            type="number"
+                                            class="mb-3"
+                                        ></v-otp-input>
+                                        <div class="text-center">
+                                            <span class="text-caption text-medium-emphasis">
+                                                Didn't receive the code?
+                                            </span>
+                                            <v-btn
+                                                variant="text"
+                                                size="small"
+                                                color="primary"
+                                                class="text-caption ml-1"
+                                                :disabled="resendTimer > 0"
+                                                @click="resendOTP"
+                                            >
+                                                {{ resendTimer > 0 ? `Resend OTP (${resendTimer}s)` : 'Resend OTP' }}
+                                            </v-btn>
+                                        </div>
+                                    </div>
+                                </v-expand-transition>
+                            </v-form>
+                        </v-card-text>
+                        <v-card-actions class="px-6 pb-6 pt-2">
                             <v-btn
-                                variant="text"
-                                size="small"
+                                v-if="!showOTP"
+                                @click="getOTP"
                                 color="primary"
-                                class="text-caption ml-1"
-                                :disabled="resendTimer > 0"
-                                @click="resendOTP"
+                                variant="flat"
+                                size="large"
+                                block
+                                class="text-none font-weight-medium"
+                                elevation="0"
                             >
-                                {{ resendTimer > 0 ? `Resend OTP (${resendTimer}s)` : 'Resend OTP' }}
+                                <v-icon start>mdi-message-text</v-icon>
+                                Get OTP
                             </v-btn>
-                            </div>
+                            <v-btn
+                                v-else
+                                @click="verifyOTP"
+                                color="primary"
+                                variant="flat"
+                                size="large"
+                                block
+                                class="text-none font-weight-medium"
+                                elevation="0"
+                            >
+                                <v-icon start>mdi-check-circle</v-icon>
+                                Verify & Login
+                            </v-btn>
+                        </v-card-actions>
+                        <v-divider></v-divider>
+                        <div class="pa-4 text-center">
+                            <p class="text-caption text-medium-emphasis mb-2">
+                                Haven't registered yet? 
+                                <a 
+                                    class="text-primary text-decoration-none font-weight-medium" 
+                                    @click="isRegisterMode = true"
+                                    style="cursor: pointer;"
+                                >
+                                    Create account
+                                </a>
+                            </p>
+                            <p class="text-caption text-medium-emphasis mb-0">
+                                By continuing, you agree to our
+                                <a class="text-primary text-decoration-none">Terms of Service</a>
+                                and
+                                <a class="text-primary text-decoration-none">Privacy Policy</a>
+                            </p>
                         </div>
-                        </v-expand-transition>
-                    </v-form>
-                    </v-card-text>
-                    <v-card-actions class="px-6 pb-6 pt-2">
-                    <v-btn
-                        v-if="!showOTP"
-                        @click="getOTP"
-                        color="primary"
-                        variant="flat"
-                        size="large"
-                        block
-                        class="text-none font-weight-medium"
-                        elevation="0"
-                    >
-                        <v-icon start>mdi-message-text</v-icon>
-                        Get OTP
-                    </v-btn>
-                    <v-btn
-                        v-else
-                        @click="verifyOTP"
-                        color="primary"
-                        variant="flat"
-                        size="large"
-                        block
-                        class="text-none font-weight-medium"
-                        elevation="0"
-                    >
-                        <v-icon start>mdi-check-circle</v-icon>
-                        Verify & Login
-                    </v-btn>
-                    </v-card-actions>
-                    <v-divider></v-divider>
-                    <div class="pa-4 text-center">
-                    <p class="text-caption text-medium-emphasis mb-0">
-                        By continuing, you agree to our
-                        <a class="text-primary text-decoration-none">Terms of Service</a>
-                        and
-                        <a class="text-primary text-decoration-none">Privacy Policy</a>
-                    </p>
-                    </div>
+                    </template>
+
+                    <!-- Registration View -->
+                    <template v-else>
+                        <div class="pa-6 pb-4">
+                            <v-card-title class="text-h5 text-center font-weight-bold px-0">
+                                Create New Account
+                            </v-card-title>
+                            <v-card-subtitle class="text-center">
+                                Sign up to get started
+                            </v-card-subtitle>
+                        </div>
+                        <v-card-text class="px-6 pb-4">
+                            <v-form ref="register_form" @submit.prevent>
+                                <div class="mb-4">
+                                    <v-text-field
+                                        v-model="registerData.username"
+                                        :rules="[$rules.required]"
+                                        variant="outlined"
+                                        label="Username"
+                                        placeholder="Enter your username"
+                                        density="comfortable"
+                                        prepend-inner-icon="mdi-account"
+                                        type="text"
+                                    >
+                                    </v-text-field>
+                                </div>
+                                <div class="mb-4">
+                                    <v-text-field
+                                        v-model="registerData.password"
+                                        :rules="[$rules.required]"
+                                        variant="outlined"
+                                        label="Password"
+                                        placeholder="Enter your password"
+                                        density="comfortable"
+                                        prepend-inner-icon="mdi-lock"
+                                        :type="showPassword ? 'text' : 'password'"
+                                        :append-inner-icon="showPassword ? 'mdi-eye-off' : 'mdi-eye'"
+                                        @click:append-inner="showPassword = !showPassword"
+                                    >
+                                    </v-text-field>
+                                </div>
+                            </v-form>
+                        </v-card-text>
+                        <v-card-actions class="px-6 pb-6 pt-2">
+                            <v-btn
+                                @click="userRegister"
+                                color="primary"
+                                variant="flat"
+                                size="large"
+                                block
+                                class="text-none font-weight-medium"
+                                elevation="0"
+                            >
+                                <v-icon start>mdi-account-plus</v-icon>
+                                Create Account
+                            </v-btn>
+                        </v-card-actions>
+                        <v-divider></v-divider>
+                        <div class="pa-4 text-center">
+                            <p class="text-caption text-medium-emphasis mb-2">
+                                Already have an account? 
+                                <a 
+                                    class="text-primary text-decoration-none font-weight-medium" 
+                                    @click="isRegisterMode = false"
+                                    style="cursor: pointer;"
+                                >
+                                    Sign in
+                                </a>
+                            </p>
+                            <p class="text-caption text-medium-emphasis mb-0">
+                                By continuing, you agree to our
+                                <a class="text-primary text-decoration-none">Terms of Service</a>
+                                and
+                                <a class="text-primary text-decoration-none">Privacy Policy</a>
+                            </p>
+                        </div>
+                    </template>
                 </v-card>
             </v-col>
         </v-row>
@@ -110,6 +200,7 @@
         export default {
             data() {
                 return {
+                    isRegisterMode: false,
                     mobileNumber: '',
                     otp: '',
                     password: '',
@@ -117,6 +208,11 @@
                     showOTP: false,
                     resendTimer: 0,
                     resendTimerInterval: null,
+                    showPassword: false,
+                    registerData: {
+                        username: '',
+                        password: ''
+                    }
                 }
             },
             beforeUnmount() {
@@ -228,6 +324,18 @@
                         successHandler,
                         failureHandler
                     );
+                },
+                userRegister() {
+                    const { valid } = this.$refs.register_form.validate();
+                    if (!valid) return false;
+                    this.$store.dispatch('snackbar/showSnackbar', {
+                        message: 'Registration form submitted! (UI only)',
+                        color: 'info',
+                    });
+                    this.registerData = {
+                        username: '',
+                        password: ''
+                    };
                 }
             }
         }
